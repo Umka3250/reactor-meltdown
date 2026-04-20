@@ -1,3 +1,5 @@
 node_modules/
 dist/
 devserver.log
+.env
+.env.local
