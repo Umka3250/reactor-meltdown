@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useGameStore } from '../store/gameStore';
@@ -86,7 +86,7 @@ export default function GameOver() {
         <div className="final-score">
           <div className="eyebrow">FINAL STABILITY</div>
           <div className="final-score__value">{String(score).padStart(4, '0')}</div>
-          {isBest && <div className="best-badge">★ NEW HIGH SCORE</div>}
+          {isBest && <div className="best-badge">NEW BEST</div>}
         </div>
 
         {user ? (
@@ -132,17 +132,23 @@ export default function GameOver() {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             className="btn-neon btn-neon-primary"
-            onClick={() => { playStart(); setTimeout(startGame, 250); }}
+            onClick={() => {
+              playStart();
+              setTimeout(startGame, 250);
+            }}
           >
-            ↻ REBOOT SYSTEM
+            REBOOT SYSTEM
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             className="btn-neon btn-neon--ghost"
-            onClick={() => { playClick(); goMenu(); }}
+            onClick={() => {
+              playClick();
+              goMenu();
+            }}
           >
-            ◂ MAIN MENU
+            MAIN MENU
           </motion.button>
         </div>
       </motion.div>

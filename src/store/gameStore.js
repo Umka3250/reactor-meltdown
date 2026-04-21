@@ -19,9 +19,22 @@ const pickRandom = (exclude) => {
   return i;
 };
 
+const normalizeHighScores = (value) => {
+  const scores = Array.isArray(value) ? value : [];
+  const best = scores
+    .map((score) => Number(score) || 0)
+    .filter((score) => score > 0)
+    .sort((a, b) => b - a)[0];
+
+  return best ? [best] : [];
+};
+
 const loadHighScores = () => {
-  try { return JSON.parse(localStorage.getItem('rm_scores') || '[]'); }
-  catch { return []; }
+  try {
+    return normalizeHighScores(JSON.parse(localStorage.getItem('rm_scores') || '[]'));
+  } catch {
+    return [];
+  }
 };
 
 export const useGameStore = create((set, get) => ({
@@ -74,7 +87,7 @@ export const useGameStore = create((set, get) => ({
 
   meltdown: () => {
     const { score, highScores } = get();
-    const next = [...highScores, score].sort((a, b) => b - a).slice(0, 5);
+    const next = normalizeHighScores([...highScores, score]);
     localStorage.setItem('rm_scores', JSON.stringify(next));
     set({ screen: 'over', highScores: next, active: -1 });
   },

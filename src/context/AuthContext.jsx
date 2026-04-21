@@ -15,8 +15,10 @@ import { auth, db, githubProvider, isFirebaseConfigured } from '../lib/firebase'
 
 const AuthContext = createContext(null);
 
+const normalizeHandle = (value) => String(value || '').trim().replace(/^@+/, '');
+
 const getGitHubHandle = (user) => {
-  const screenName = user?.reloadUserInfo?.screenName;
+  const screenName = normalizeHandle(user?.reloadUserInfo?.screenName);
   if (screenName) {
     return screenName;
   }
@@ -24,10 +26,29 @@ const getGitHubHandle = (user) => {
   const githubProfile = user?.providerData?.find((item) => item.providerId === 'github.com');
   const name = githubProfile?.displayName || user?.displayName || '';
   if (name && !name.includes(' ')) {
-    return name.replace(/^@/, '');
+    return normalizeHandle(name);
   }
 
   return '';
+};
+
+const getEntryLabel = (entry) => {
+  const handle = normalizeHandle(entry?.githubHandle);
+  if (handle) {
+    return `@${handle}`;
+  }
+
+  const profileMatch = String(entry?.profileUrl || '').match(/github\.com\/([^/?#]+)/i);
+  if (profileMatch?.[1]) {
+    return `@${normalizeHandle(profileMatch[1])}`;
+  }
+
+  const displayName = String(entry?.displayName || '').trim();
+  if (displayName) {
+    return displayName.startsWith('@') ? displayName : `@${displayName}`;
+  }
+
+  return 'GitHub pilot';
 };
 
 const getPlayerLabel = (user) => {
@@ -99,6 +120,7 @@ export function AuthProvider({ children }) {
           snapshot.docs.map((entry) => ({
             id: entry.id,
             ...entry.data(),
+            label: getEntryLabel(entry.data()),
           }))
         );
         setLeaderboardLoading(false);
